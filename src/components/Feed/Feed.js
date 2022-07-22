@@ -18,6 +18,7 @@ function Feed(props) {
     const { publicKey, sendTransaction } = useWallet();
 
     const [posts, setPosts]=useState([]);
+    const [bool, setBool]= useState(false);
     useEffect(() => {
         // document.title = `You clicked ${count} times`;
                 const baseAccount = web3.Keypair.generate();
@@ -29,7 +30,7 @@ function Feed(props) {
             preflightCommitment: "processed",
         });
         transaction(provider);
-      },[]);
+      },[publicKey, bool]);
 
       const transaction=async(provider)=>{
                 const a = JSON.stringify(idl);
@@ -38,6 +39,9 @@ function Feed(props) {
         try {
 
             const tweetAccount = await program.account.tweet.all();
+            // console.log(tweetAccount,"tweetAccount")
+            // console.log(tweetAccount[tweetAccount.length-1].account.author.toBase58(),"tweetAccount pubkey")
+            // console.log(publicKey.toBase58(),"publicKey")
             let tweets = [];
 
             for (let i = 0; i < tweetAccount.length; i++) {
@@ -45,7 +49,8 @@ function Feed(props) {
                     'id': i,
                     'tweetText': tweetAccount[i].account.content.toString(),
                     'username': tweetAccount[i].account.topic.toString(),
-                    'personal': false
+                    // 'personal': false
+                    'personal':( publicKey ? (tweetAccount && tweetAccount[i].account.author.toBase58() === publicKey.toBase58() ? true:false )  : false)
                 };
                 tweets.push(tweet);
             }
@@ -63,6 +68,14 @@ function Feed(props) {
             console.log("Transcation error: ", err);
         }
     }
+
+// const fetchTweet=()=>{
+//     setBool(!bool);
+//     console.log("fetchTweet called");
+
+// }
+    // console.log("fetchTweet called bool", bool);
+
      
   return (
                 <div className="feed">
@@ -80,7 +93,15 @@ function Feed(props) {
                     }
                     </div>
                 </div>
-{!publicKey ? (<></>):(<><TweetBox /></>)}
+{!publicKey ? 
+(<></>)
+:
+(<>
+<TweetBox 
+// fetchTweet={fetchTweet()}
+/>
+</>)
+}
                 
 
                 <FlipMove>

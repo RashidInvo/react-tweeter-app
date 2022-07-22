@@ -10,7 +10,7 @@ import { Program, Provider, web3 } from "@project-serum/anchor";
 import { Connection } from "@solana/web3.js";
 import idl from "../../idl.json";
 
-function TweetBox() {
+function TweetBox(props) {
     const [tweetMessage, setTweetMessage] = useState("");
     const [tweetTopic, setTweetTopic] = useState("");
     const [avatarOptions, setAvatarOptions] = useState("");
@@ -57,6 +57,7 @@ function TweetBox() {
 
             const tweetAccount = await program.account.tweet.fetch(baseAccount.publicKey);
             console.log('account: ', tweetAccount);
+            // props.fetchTweet();
         }
         catch (err) {
             console.log("Transcation error: ", err);
